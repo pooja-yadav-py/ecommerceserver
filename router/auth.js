@@ -2,14 +2,16 @@ const express = require("express");
 const router = express.Router();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const Authenticate = require('../middleware/authenticate');
+const ProductMessage = require('../model/createProductSchema.js');
+// const Authenticate = require('../middleware/authenticate');
 
 
 require("../db/connection");
 const User = require("../model/userSchema");
 
-//signup route
 
+
+//signup route
 router.post("/signup", async (req, res) => {
   const { email,firstname,lastname,password } = req.body;
   if (!email || !firstname || !lastname || !password) {
@@ -55,4 +57,23 @@ router.post("/login", async (req,res) => {
           }
 
 });
+
+//create_product route
+router.post("/createProduct", async (req,res) => {
+  
+  const product = req.body;
+  console.log(product);
+  
+  const newProduct = new ProductMessage({ ...product })
+  console.log(newProduct);
+  try{
+    await newProduct.save();
+    res.status(201).json(newProduct);
+    
+  }catch(err){
+    res.status(409).json({ message:err.message });
+  }
+  
+})
+
 module.exports = router;
